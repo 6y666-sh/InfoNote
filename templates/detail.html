@@ -1,0 +1,135 @@
+{% extends "base.html" %} {% block title %}문제 상세 - InfoNote{% endblock %} {%
+block content %}
+<div class="detail-wrap">
+  <div class="detail-card {{ q.wrong_class() }}">
+    <!-- 메타 정보 -->
+    <div class="detail-meta">
+      <span class="badge-subject"
+        >{{ subject_map.get(q.subject, q.subject) }}</span
+      >
+      {% if q.detail_tag %}<span class="badge-tag">{{ q.detail_tag }}</span>{%
+      endif %}
+      <span
+        class="badge-wrong {% if q.wrong_count >= 3 %}danger{% elif q.wrong_count >= 2 %}warning{% endif %}"
+      >
+        틀린 횟수: {{ q.wrong_count }}회
+      </span>
+      <span
+        class="star-btn {% if q.is_starred %}starred{% endif %}"
+        data-id="{{ q.id }}"
+      >
+        {% if q.is_starred %}★{% else %}☆{% endif %}
+      </span>
+      {% for tag in q.tags %}
+      <span class="tag-chip">{{ tag.name }}</span>
+      {% endfor %}
+    </div>
+
+    <!-- 문제 이미지 -->
+    {% if q.image_path %}
+    <div style="margin-bottom: 16px">
+      <img
+        src="{{ url_for('static', filename=q.image_path) }}"
+        alt="문제 이미지"
+        style="max-width: 100%; border-radius: 8px"
+      />
+    </div>
+    {% endif %}
+
+    <!-- 문제 본문 -->
+    <p class="detail-question">{{ q.question_text }}</p>
+
+    <!-- 보기 -->
+    <ul class="detail-choices">
+      {% if q.choice_1 %}
+      <li
+        class="{% if q.my_answer == '1' %}my-answer{% endif %} {% if q.correct_answer == '1' %}correct-answer{% endif %}"
+      >
+        ① {{ q.choice_1 }}
+      </li>
+      {% endif %} {% if q.choice_2 %}
+      <li
+        class="{% if q.my_answer == '2' %}my-answer{% endif %} {% if q.correct_answer == '2' %}correct-answer{% endif %}"
+      >
+        ② {{ q.choice_2 }}
+      </li>
+      {% endif %} {% if q.choice_3 %}
+      <li
+        class="{% if q.my_answer == '3' %}my-answer{% endif %} {% if q.correct_answer == '3' %}correct-answer{% endif %}"
+      >
+        ③ {{ q.choice_3 }}
+      </li>
+      {% endif %} {% if q.choice_4 %}
+      <li
+        class="{% if q.my_answer == '4' %}my-answer{% endif %} {% if q.correct_answer == '4' %}correct-answer{% endif %}"
+      >
+        ④ {{ q.choice_4 }}
+      </li>
+      {% endif %}
+    </ul>
+
+    <!-- 내 답 / 정답 -->
+    <div class="detail-section">
+      <h4>내 답 / 정답</h4>
+      <p>
+        내가 선택: <strong>{{ q.my_answer }}번</strong> &nbsp;|&nbsp; 정답:
+        <strong>{{ q.correct_answer }}번</strong>
+      </p>
+    </div>
+
+    <!-- 한 줄 요약 -->
+    {% if q.summary %}
+    <div class="detail-section">
+      <h4>한 줄 요약</h4>
+      <p>{{ q.summary }}</p>
+    </div>
+    {% endif %}
+
+    <!-- 틀린 이유 -->
+    {% if q.wrong_reason %}
+    <div class="detail-section">
+      <h4>틀린 이유</h4>
+      <p>{{ q.wrong_reason }}</p>
+    </div>
+    {% endif %}
+
+    <!-- 핵심 개념 -->
+    {% if q.key_concept %}
+    <div class="detail-section">
+      <h4>💡 핵심 개념</h4>
+      <p class="key-concept">{{ q.key_concept }}</p>
+    </div>
+    {% endif %}
+
+    <!-- 액션 버튼 -->
+    <div class="detail-actions">
+      <a href="{{ url_for('questions.index') }}" class="btn-back">← 목록으로</a>
+      <form
+        action="{{ url_for('questions.delete', qid=q.id) }}"
+        method="post"
+        onsubmit="return confirm('정말 삭제하시겠습니까?');"
+      >
+        <button type="submit" class="btn-delete">삭제</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var starBtn = document.querySelector(".star-btn");
+    if (starBtn) {
+      starBtn.addEventListener("click", function () {
+        fetch("/question/" + starBtn.dataset.id + "/star", { method: "POST" })
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            starBtn.textContent = data.is_starred ? "★" : "☆";
+            starBtn.classList.toggle("starred", data.is_starred);
+          });
+      });
+    }
+  });
+</script>
+{% endblock %}

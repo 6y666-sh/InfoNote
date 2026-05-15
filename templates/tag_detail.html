@@ -1,0 +1,63 @@
+{% extends "base.html" %} {% block title %}{{ tag.name }} - 문제 목록{% endblock
+%} {% block content %}
+<div class="wiki-wrap">
+  <div class="page-header">
+    <h2>{{ tag.name }}</h2>
+    <a href="{{ url_for('tags.wiki') }}" class="btn-back">← Wiki로</a>
+  </div>
+
+  {% if questions %}
+  <table class="q-table">
+    <thead>
+      <tr>
+        <th>★</th>
+        <th>과목</th>
+        <th>한 줄 요약</th>
+        <th>태그</th>
+        <th>틀린 횟수</th>
+        <th>등록일</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for q in questions %}
+      <tr
+        class="q-row {{ q.wrong_class() }}"
+        data-href="{{ url_for('questions.detail', qid=q.id) }}"
+      >
+        <td class="star-cell">
+          <span
+            class="star-btn {% if q.is_starred %}starred{% endif %}"
+            data-id="{{ q.id }}"
+          >
+            {% if q.is_starred %}★{% else %}☆{% endif %}
+          </span>
+        </td>
+        <td>{{ subject_map.get(q.subject, q.subject) }}</td>
+        <td>
+          {% if q.summary %} {{ q.summary[:60] }}{% if q.summary|length > 60
+          %}...{% endif %} {% else %} {{ q.question_text[:60] }}{% if
+          q.question_text|length > 60 %}...{% endif %} {% endif %}
+        </td>
+        <td>
+          {% for t in q.tags %}
+          <span class="tag-chip">{{ t.name }}</span>
+          {% endfor %}
+        </td>
+        <td>
+          <span
+            class="badge-wrong {% if q.wrong_count >= 3 %}danger{% elif q.wrong_count >= 2 %}warning{% endif %}"
+            id="wrong-{{ q.id }}"
+          >
+            {{ q.wrong_count }}회
+          </span>
+        </td>
+        <td>{{ q.created_at.strftime('%Y-%m-%d') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-msg"><p>해당 조건에 문제가 없습니다.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

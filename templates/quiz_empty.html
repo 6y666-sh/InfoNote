@@ -1,0 +1,10 @@
+{% extends "base.html" %} {% block title %}퀴즈{% endblock %} {% block content
+%}
+<div class="quiz-wrap">
+  <div class="quiz-header"><h2>{{ title }}</h2></div>
+  <div class="empty-msg">
+    <p>해당 조건에 맞는 문제가 없습니다.</p>
+    <a href="{{ url_for('tags.wiki') }}" class="btn-wiki">Wiki로 돌아가기</a>
+  </div>
+</div>
+{% endblock %}

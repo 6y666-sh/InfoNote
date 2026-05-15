@@ -1,0 +1,33 @@
+<!-- templates/base.html -->
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InfoNote - 정처기 오답노트</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <!-- 네비게이션 -->
+    <nav>
+      <div class="nav-inner">
+        <a href="{{ url_for('questions.index') }}" class="nav-logo"
+          >📝 InfoNote</a
+        >
+        <div class="nav-links">
+          <a href="{{ url_for('questions.index') }}">홈</a>
+          <a href="{{ url_for('questions.add') }}">문제 추가</a>
+          <a href="{{ url_for('tags.wiki') }}">Wiki</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- 메인 콘텐츠 -->
+    <main>{% block content %}{% endblock %}</main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>

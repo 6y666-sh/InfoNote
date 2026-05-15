@@ -1,0 +1,167 @@
+{% extends "base.html" %} {% block title %}Wiki - 오답노트{% endblock %} {%
+block content %}
+<div class="wiki-wrap">
+  <h2>📚 오답노트 Wiki</h2>
+
+  <!-- ① 과목별 고정 버튼 -->
+  <section class="wiki-section">
+    <h3>과목별 문제</h3>
+    <div class="tag-group">
+      {% for num, label in subject_tags.items() %}
+      <div class="tag-item-wrap">
+        <a
+          class="tag-btn subject-btn"
+          href="{{ url_for('tags.subject_filter', subject_num=num) }}"
+        >
+          {{ label }}
+        </a>
+        <a
+          class="quiz-start-btn"
+          href="{{ url_for('tags.quiz', mode='subject', value=num, idx=0) }}"
+          title="퀴즈 시작"
+          >▶</a
+        >
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ② 특별 필터 태그 -->
+  <section class="wiki-section">
+    <h3>특별 모아보기</h3>
+    <div class="tag-group">
+      <div class="tag-item-wrap">
+        <span class="tag-btn starred-tag">★ 중요 문제 ({{ count_star }})</span>
+        <a
+          class="quiz-start-btn"
+          href="{{ url_for('tags.quiz', mode='starred', value='', idx=0) }}"
+          title="중요 문제 퀴즈"
+          >▶</a
+        >
+      </div>
+      <div class="tag-item-wrap">
+        <span class="tag-btn danger-tag"
+          >🔴 3회 이상 틀린 문제 ({{ count_3 }})</span
+        >
+        <a
+          class="quiz-start-btn"
+          href="{{ url_for('tags.quiz', mode='wrong3', value='', idx=0) }}"
+          title="3회 이상 틀린 문제 퀴즈"
+          >▶</a
+        >
+      </div>
+      <div class="tag-item-wrap">
+        <span class="tag-btn warning-tag"
+          >🟡 2회 이상 틀린 문제 ({{ count_2 }})</span
+        >
+        <a
+          class="quiz-start-btn"
+          href="{{ url_for('tags.quiz', mode='wrong2', value='', idx=0) }}"
+          title="2회 이상 틀린 문제 퀴즈"
+          >▶</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ 세부 태그 (클릭 → 해당 태그 문제 목록) -->
+  {% if extra_tags %}
+  <section class="wiki-section">
+    <h3>
+      세부 태그
+      <button class="toggle-extra-btn" onclick="toggleExtra()">펼치기 ▼</button>
+    </h3>
+    <div class="tag-group extra-tags" id="extra-tags" style="display: none">
+      {% for tag in extra_tags %}
+      <div class="tag-item-wrap">
+        <a
+          class="tag-btn"
+          href="{{ url_for('tags.tag_detail', tag_name=tag.name) }}"
+        >
+          {{ tag.name }}
+        </a>
+        <a
+          class="quiz-start-btn"
+          href="{{ url_for('tags.quiz', mode='tag', value=tag.name, idx=0) }}"
+          title="퀴즈 시작"
+          >▶</a
+        >
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- ④ 전체 문제 목록 (중요 → 3회↑ → 2회↑ → 최신순) -->
+  <section class="wiki-section">
+    <h3>전체 문제 목록</h3>
+    {% if all_questions %}
+    <table class="q-table">
+      <thead>
+        <tr>
+          <th>★</th>
+          <th>과목</th>
+          <th>한 줄 요약</th>
+          <th>태그</th>
+          <th>틀린 횟수</th>
+          <th>등록일</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for q in all_questions %}
+        <tr
+          class="q-row {{ q.wrong_class() }}"
+          data-href="{{ url_for('questions.detail', qid=q.id) }}"
+        >
+          <td class="star-cell">
+            <span
+              class="star-btn {% if q.is_starred %}starred{% endif %}"
+              data-id="{{ q.id }}"
+            >
+              {% if q.is_starred %}★{% else %}☆{% endif %}
+            </span>
+          </td>
+          <td>{{ subject_map.get(q.subject, q.subject) }}</td>
+          <td>
+            {% if q.summary %} {{ q.summary[:60] }}{% if q.summary|length > 60
+            %}...{% endif %} {% else %} {{ q.question_text[:50] }}{% if
+            q.question_text|length > 50 %}...{% endif %} {% endif %}
+          </td>
+          <td>
+            {% for tag in q.tags %}
+            <span class="tag-chip">{{ tag.name }}</span>
+            {% endfor %}
+          </td>
+          <td>
+            <span
+              class="badge-wrong {% if q.wrong_count >= 3 %}danger{% elif q.wrong_count >= 2 %}warning{% endif %}"
+              id="wrong-{{ q.id }}"
+            >
+              {{ q.wrong_count }}회
+            </span>
+          </td>
+          <td>{{ q.created_at.strftime('%Y-%m-%d') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-msg"><p>등록된 문제가 없습니다.</p></div>
+    {% endif %}
+  </section>
+</div>
+
+<script>
+  function toggleExtra() {
+    var el = document.getElementById("extra-tags");
+    var btn = document.querySelector(".toggle-extra-btn");
+    if (el.style.display === "none") {
+      el.style.display = "flex";
+      btn.textContent = "접기 ▲";
+    } else {
+      el.style.display = "none";
+      btn.textContent = "펼치기 ▼";
+    }
+  }
+</script>
+{% endblock %}

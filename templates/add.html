@@ -1,0 +1,155 @@
+<!-- templates/add.html -->
+{% extends "base.html" %} {% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>문제 추가</h1>
+  </div>
+
+  <form
+    method="POST"
+    action="{{ url_for('questions.add') }}"
+    enctype="multipart/form-data"
+    class="question-form"
+  >
+    <!-- 과목 선택 -->
+    <div class="form-group">
+      <label>과목 <span class="required">*</span></label>
+      <select name="subject" required>
+        <option value="">-- 선택 --</option>
+        <option value="1과목">1과목 - 소프트웨어 설계</option>
+        <option value="2과목">2과목 - 소프트웨어 개발</option>
+        <option value="3과목">3과목 - 데이터베이스 구축</option>
+        <option value="4과목">4과목 - 프로그래밍 언어 활용</option>
+        <option value="5과목">5과목 - 정보시스템 구축 관리</option>
+      </select>
+    </div>
+
+    <!-- 태그 입력 -->
+    <div class="form-group">
+      <label>태그</label>
+      <input
+        type="text"
+        name="tags"
+        placeholder="쉼표로 구분 (예: 프로세스, OSI, TCP/IP)"
+      />
+      <small>쉼표(,)로 구분하여 여러 태그를 입력할 수 있습니다.</small>
+    </div>
+
+    <!-- 문제 내용 -->
+    <div class="form-group">
+      <label>문제 내용 <span class="required">*</span></label>
+      <textarea
+        name="question_text"
+        rows="5"
+        required
+        placeholder="문제 내용을 입력하세요."
+      ></textarea>
+    </div>
+
+    <!-- 이미지 첨부 -->
+    <div class="form-group">
+      <label>이미지 첨부 (선택)</label>
+      <input type="file" name="image" accept="image/*" id="imageInput" />
+      <div id="imagePreview" class="image-preview" style="display: none">
+        <img id="previewImg" src="" alt="미리보기" />
+      </div>
+    </div>
+
+    <!-- 보기 4개 -->
+    <div class="form-group">
+      <label>보기</label>
+      <div class="choices">
+        <div class="choice-row">
+          <span class="choice-num">①</span>
+          <input type="text" name="choice_1" placeholder="보기 1 입력" />
+        </div>
+        <div class="choice-row">
+          <span class="choice-num">②</span>
+          <input type="text" name="choice_2" placeholder="보기 2 입력" />
+        </div>
+        <div class="choice-row">
+          <span class="choice-num">③</span>
+          <input type="text" name="choice_3" placeholder="보기 3 입력" />
+        </div>
+        <div class="choice-row">
+          <span class="choice-num">④</span>
+          <input type="text" name="choice_4" placeholder="보기 4 입력" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 내가 고른 답 -->
+    <div class="form-group">
+      <label>내가 고른 답</label>
+      <div class="radio-group">
+        <label class="radio-label">
+          <input type="radio" name="my_answer" value="1" /> ①
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="my_answer" value="2" /> ②
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="my_answer" value="3" /> ③
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="my_answer" value="4" /> ④
+        </label>
+      </div>
+    </div>
+
+    <!-- 정답 -->
+    <div class="form-group">
+      <label>정답 <span class="required">*</span></label>
+      <div class="radio-group">
+        <label class="radio-label">
+          <input type="radio" name="correct_answer" value="1" required /> ①
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="correct_answer" value="2" /> ②
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="correct_answer" value="3" /> ③
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="correct_answer" value="4" /> ④
+        </label>
+      </div>
+    </div>
+
+    <!-- 요약 -->
+    <div class="form-group">
+      <label>요약</label>
+      <input
+        type="text"
+        name="summary"
+        placeholder="이 문제를 한 줄로 요약하세요."
+      />
+    </div>
+
+    <!-- 틀린 이유 -->
+    <div class="form-group">
+      <label>틀린 이유</label>
+      <textarea
+        name="wrong_reason"
+        rows="3"
+        placeholder="왜 틀렸는지 적어보세요."
+      ></textarea>
+    </div>
+
+    <!-- 핵심 개념 -->
+    <div class="form-group">
+      <label>핵심 개념</label>
+      <textarea
+        name="key_concept"
+        rows="4"
+        placeholder="이 문제와 관련된 핵심 개념을 정리하세요."
+      ></textarea>
+    </div>
+
+    <div class="form-actions">
+      <a href="{{ url_for('questions.index') }}" class="btn-secondary">취소</a>
+      <button type="submit" class="btn-primary">저장</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

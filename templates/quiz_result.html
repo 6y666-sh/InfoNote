@@ -1,0 +1,86 @@
+{% extends "base.html" %} {% block title %}퀴즈 결과{% endblock %} {% block
+content %}
+<div class="quiz-wrap">
+  <div class="quiz-header">
+    <h2>퀴즈 결과</h2>
+  </div>
+
+  <div class="result-summary">
+    <div class="result-score">
+      <span class="score-num">{{ correct_count }}</span>
+      <span class="score-sep"> / </span>
+      <span class="score-total">{{ total }}</span>
+    </div>
+    <p class="score-label">
+      {% if wrong_count == 0 %} 🎉 모두 맞혔습니다! {% else %} {{ wrong_count
+      }}문제 틀렸습니다. {% endif %}
+    </p>
+  </div>
+
+  <!-- 틀린 문제 목록 -->
+  {% if wrong_questions %}
+  <div class="wrong-list">
+    <h3>❌ 틀린 문제 목록</h3>
+    <table class="q-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>문제</th>
+          <th>틀린 횟수</th>
+          <th>상세</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for q in wrong_questions %}
+        <tr class="{{ q.wrong_class() }}">
+          <td>{{ loop.index }}</td>
+          <td>
+            {{ q.question_text[:60] }}{% if q.question_text|length > 60 %}...{%
+            endif %}
+          </td>
+          <td>
+            <span
+              class="badge-wrong {% if q.wrong_count >= 3 %}danger{% elif q.wrong_count >= 2 %}warning{% endif %}"
+            >
+              {{ q.wrong_count }}회
+            </span>
+          </td>
+          <td>
+            <a
+              href="{{ url_for('questions.detail', qid=q.id) }}"
+              target="_blank"
+              >보기</a
+            >
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- 버튼 영역 -->
+  <div class="result-actions">
+    {% if wrong_questions %}
+    <!-- 복습하기: 이번에 틀린 문제만 다시 풀기 -->
+    <a
+      class="btn-review"
+      href="{{ url_for('tags.quiz', mode='tag', value='', ids_str=wrong_ids, idx=0) }}"
+    >
+      🔁 복습하기 (틀린 {{ wrong_count }}문제)
+    </a>
+    {% endif %}
+
+    <!-- Wiki로 돌아가기 -->
+    <a class="btn-wiki" href="{{ url_for('tags.wiki') }}">Wiki로 돌아가기</a>
+
+    <!-- 처음부터 다시 풀기 -->
+    <a
+      class="btn-retry"
+      href="{{ url_for('tags.quiz', mode=mode, value=value, idx=0) }}"
+    >
+      처음부터 다시 풀기
+    </a>
+  </div>
+</div>
+{% endblock %}
